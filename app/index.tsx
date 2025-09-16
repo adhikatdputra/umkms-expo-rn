@@ -1,12 +1,12 @@
-import { HelloWave } from "@/components/hello-wave";
 import { Button } from "@/components/ui/button";
+import LottieView from "lottie-react-native";
 import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Toast } from "toastify-react-native";
 
-const emailValue = "user@umkms.com"
-const passwordValue = "qwerty12"
+const emailValue = "user@umkms.com";
+const passwordValue = "qwerty12";
 
 export default function HomeScreen() {
   const [email, setEmail] = useState("");
@@ -29,7 +29,12 @@ export default function HomeScreen() {
     <SafeAreaView className="flex-1 p-6 w-full bg-white justify-center items-center">
       <View className="flex-1 w-full">
         <View className="flex-1 items-center justify-center gap-3">
-          <HelloWave />
+          <LottieView
+            source={require("@/assets/animations/hallo.json")}
+            style={{ width: 300, height: 200 }}
+            autoPlay
+            loop
+          />
           <Text className="text-4xl font-bold text-black">
             Let&apos;s Sign you in.
           </Text>
