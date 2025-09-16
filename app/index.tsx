@@ -1,37 +1,72 @@
-import { Button, Image, Text, View } from "react-native";
-
 import { HelloWave } from "@/components/hello-wave";
-import ParallaxScrollView from "@/components/parallax-scroll-view";
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Toast } from "toastify-react-native";
 
+const emailValue = "user@umkms.com"
+const passwordValue = "qwerty12"
+
 export default function HomeScreen() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [seePassword, setSeePassword] = useState(false);
+
+  const handleSignIn = () => {
+    if (email === "" || password === "") {
+      Toast.error("Please fill in all fields");
+      return;
+    }
+    if (email !== emailValue || password !== passwordValue) {
+      Toast.error("Invalid email or password");
+      return;
+    }
+    Toast.success("Sign in successful");
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <Image
-          source={require("@/assets/images/partial-react-logo.png")}
-          className="h-[178px] w-[290px] bottom-0 left-0 absolute"
-        />
-      }
-    >
-      <ThemedView className="gap-2 mb-2">
-        <View className="flex-1 items-center justify-center bg-white">
-          <Text className="text-2xl font-bold text-red-500">
-            Welcome to Nativewind!
-          </Text>
+    <SafeAreaView className="flex-1 p-6 w-full bg-white justify-center items-center">
+      <View className="flex-1 w-full">
+        <View className="flex-1 items-center justify-center gap-3">
           <HelloWave />
+          <Text className="text-4xl font-bold text-black">
+            Let&apos;s Sign you in.
+          </Text>
+          <Text className="text-2xl text-black">Welcome back.</Text>
+          <Text className="text-2xl text-black">You&apos;ve been missed.</Text>
+          <View className="gap-6 w-full mt-6">
+            <TextInput
+              placeholder="Email"
+              value={email}
+              onChangeText={setEmail}
+              className="border border-gray-300 rounded-xl p-4"
+            />
+            <View className="relative">
+              <TextInput
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                className="border border-gray-300 rounded-xl p-4"
+                secureTextEntry={!seePassword}
+              />
+              <TouchableOpacity
+                onPress={() => setSeePassword(!seePassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2"
+              >
+                <Text>{seePassword ? "Hide" : "Show"}</Text>
+              </TouchableOpacity>
+            </View>
+            <View className="flex items-center justify-center">
+              <Button
+                title="Sign in"
+                onPress={handleSignIn}
+                variant="primary"
+              />
+            </View>
+          </View>
         </View>
-      </ThemedView>
-      <ThemedView className="gap-2 mb-2">
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <Button
-          title="Show Toast"
-          onPress={() => Toast.success("Success message!")}
-        />
-      </ThemedView>
-    </ParallaxScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
