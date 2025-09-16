@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useLogin } from "@/services/authService";
 import LottieView from "lottie-react-native";
 import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -12,6 +13,13 @@ export default function HomeScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [seePassword, setSeePassword] = useState(false);
+  const { mutate: loginMutation, isPending } = useLogin();
+
+  const resetForm = () => {
+    setEmail("");
+    setPassword("");
+    setSeePassword(false);
+  };
 
   const handleSignIn = () => {
     if (email === "" || password === "") {
@@ -22,7 +30,13 @@ export default function HomeScreen() {
       Toast.error("Invalid email or password");
       return;
     }
-    Toast.success("Sign in successful");
+    loginMutation(undefined, {
+      onSuccess: () => {
+        setTimeout(() => {
+          resetForm();
+        }, 2000);
+      },
+    });
   };
 
   return (
@@ -67,6 +81,7 @@ export default function HomeScreen() {
                 title="Sign in"
                 onPress={handleSignIn}
                 variant="primary"
+                isLoading={isPending}
               />
             </View>
           </View>

@@ -1,6 +1,7 @@
 // src/services/api.ts
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { AxiosError, AxiosResponse } from "axios";
+import { router } from 'expo-router';
 import { Alert } from "react-native";
 
 // Types
@@ -10,7 +11,7 @@ interface ApiError {
 }
 
 // Constants
-const API_BASE_URL = "https://remit.umkms.com/api";
+const API_BASE_URL = "https://remit.umkms.com";
 const TOKEN_KEY = "authToken";
 const CLIENT_ID = "dcbe7aa2-9fe2-4f68-a8bd-1e7a7b381306";
 
@@ -40,11 +41,11 @@ instance.interceptors.request.use(
       return config;
     } catch (error) {
       console.error("Error getting token from AsyncStorage:", error);
-      
+
       // Set headers directly on the config object
       config.headers.set("Accept", "application/json");
       config.headers.set("X-CLIENT-ID", CLIENT_ID);
-      
+
       return config;
     }
   },
@@ -81,7 +82,7 @@ instance.interceptors.response.use(
             "Your session has expired. Please login again.",
             [{ text: "OK" }]
           );
-
+          router.push("/");
           // Note: Navigation should be handled in your app's navigation context
           // You can use a navigation service or global state management
         } catch (storageError) {

@@ -1,122 +1,114 @@
-import { Image } from "expo-image";
-import { Button, Platform, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 
-import { HelloWave } from "@/components/hello-wave";
-import ParallaxScrollView from "@/components/parallax-scroll-view";
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
-import { Link } from "expo-router";
-import { Toast } from "toastify-react-native";
+// import { Toast } from "toastify-react-native";
+import transactionsApi from "@/api/transactions";
+import { formatDate } from "@/helpers/date";
+import { formatRupiah } from "@/helpers/number";
+import { Balance } from "@/interfaces/transactions";
+import { useQuery } from "@tanstack/react-query";
+import LottieView from "lottie-react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
+  const { data: balance, isLoading } = useQuery({
+    queryKey: ["balance"],
+    queryFn: transactionsApi.getBalance,
+    select: (data) => data.data as Balance,
+  });
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <Image
-          source={require("@/assets/images/partial-react-logo.png")}
-          style={styles.reactLogo}
-        />
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <View className="flex-1 items-center justify-center bg-white">
-          <Text className="text-5xl font-bold text-red-500">
-            Welcome to Nativewind!
-          </Text>
+    <SafeAreaView className="flex-1 p-6 w-full bg-gray-100 gap-4">
+      <Text>
+        HALO,{" "}
+        <Text className="font-bold uppercase">ADHIKA TRISNA DWIPUTRA</Text>
+      </Text>
+      <View className="flex w-full">
+        <View className="h-[150px] bg-primary/90 rounded-xl relative overflow-hidden p-6">
+          <View className="z-10">
+            <Text className="text-white text-xl font-bold">Saldo Anda:</Text>
+            {isLoading ? (
+              <ActivityIndicator size="large" color="white" />
+            ) : (
+              <Text className="text-white text-3xl font-bold">
+                {formatRupiah(balance?.balance || 0)}
+              </Text>
+            )}
+          </View>
+          <View className="absolute w-[250px] h-[250px] -right-20 -top-4 bg-primary rounded-full"></View>
+          <View className="absolute w-[200px] h-[200px] -right-20 -bottom-4 bg-red-300 rounded-full"></View>
         </View>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}
-          to see changes. Press{" "}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: "cmd + d",
-              android: "cmd + m",
-              web: "F12",
-            })}
-          </ThemedText>{" "}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction
-              title="Action"
-              icon="cube"
-              onPress={() => alert("Action pressed")}
+      </View>
+      <View className="mt-2">
+        <Text className="text-lg font-bold">Riwayat Transaksi</Text>
+      </View>
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <View className=" gap-2">
+          <View className="gap-4 mt-2">
+            <View className="w-full bg-white rounded-xl p-8 flex-row items-center justify-center gap-2">
+              <ActivityIndicator size="small" color="black" />
+              <Text>Mohon menunggu...</Text>
+            </View>
+          </View>
+          <View className="gap-4 mt-2">
+            <View className="w-full bg-white rounded-xl p-4 flex-row justify-between">
+              <View className="gap-2">
+                <Text>ID #353636</Text>
+                <Text className="text-sm text-gray-500">
+                  {formatDate("2025-09-17 10:00:00")}
+                </Text>
+              </View>
+              <View className="gap-0 items-end">
+                <Text className="text-lg font-bold">
+                  {formatRupiah(100000)}
+                </Text>
+                <Text className="text-sm font-semibold text-primary">
+                  Berhasil
+                </Text>
+              </View>
+            </View>
+            <View className="w-full bg-white rounded-xl p-4 flex-row justify-between">
+              <View className="gap-2">
+                <Text>ID #353636</Text>
+                <Text className="text-sm text-gray-500">
+                  {formatDate("2025-09-17 10:00:00")}
+                </Text>
+              </View>
+              <View className="gap-0 items-end">
+                <Text className="text-lg font-bold">
+                  {formatRupiah(100000)}
+                </Text>
+                <Text className="text-sm font-semibold text-yellow-500">
+                  Pending
+                </Text>
+              </View>
+            </View>
+            <View className="w-full bg-white rounded-xl p-4 flex-row justify-between">
+              <View className="gap-2">
+                <Text>ID #353636</Text>
+                <Text className="text-sm text-gray-500">
+                  {formatDate("2025-09-17 10:00:00")}
+                </Text>
+              </View>
+              <View className="gap-0 items-end">
+                <Text className="text-lg font-bold">
+                  {formatRupiah(100000)}
+                </Text>
+                <Text className="text-sm font-semibold text-red-400">
+                  Gagal
+                </Text>
+              </View>
+            </View>
+          </View>
+          <View className="mt-4 items-center justify-center">
+            <LottieView
+              source={require("@/assets/animations/empty.json")}
+              style={{ width: 300, height: 200 }}
+              autoPlay
+              loop
             />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert("Share pressed")}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert("Delete pressed")}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
-
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">
-            npm run reset-project
-          </ThemedText>{" "}
-          to get a fresh <ThemedText type="defaultSemiBold">app</ThemedText>{" "}
-          directory. This will move the current{" "}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{" "}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <Button
-          title="Show Toast"
-          onPress={() => Toast.success("Success message!")}
-        />
-      </ThemedView>
-    </ParallaxScrollView>
+            <Text className="text-sm text-gray-500">Tidak ada data</Text>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
-  },
-});

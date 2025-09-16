@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const TOKEN_KEY = "authToken";
 
-export const apiHelpers = {
+export const useAuth = {
     // Save token to AsyncStorage
     saveToken: async (token: string): Promise<void> => {
       try {
