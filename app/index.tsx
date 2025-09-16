@@ -4,7 +4,6 @@ import LottieView from "lottie-react-native";
 import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Toast } from "toastify-react-native";
 
 const emailValue = "user@umkms.com";
 const passwordValue = "qwerty12";
@@ -22,14 +21,14 @@ export default function HomeScreen() {
   };
 
   const handleSignIn = () => {
-    if (email === "" || password === "") {
-      Toast.error("Please fill in all fields");
-      return;
-    }
-    if (email !== emailValue || password !== passwordValue) {
-      Toast.error("Invalid email or password");
-      return;
-    }
+    // if (email === "" || password === "") {
+    //   Toast.error("Please fill in all fields");
+    //   return;
+    // }
+    // if (email !== emailValue || password !== passwordValue) {
+    //   Toast.error("Invalid email or password");
+    //   return;
+    // }
     loginMutation(undefined, {
       onSuccess: () => {
         setTimeout(() => {
@@ -54,12 +53,14 @@ export default function HomeScreen() {
           </Text>
           <Text className="text-2xl text-black">Welcome back.</Text>
           <Text className="text-2xl text-black">You&apos;ve been missed.</Text>
-          <View className="gap-6 w-full mt-6">
+          <View className="gap-6 w-full mt-6 px-4">
             <TextInput
               placeholder="Email"
               value={email}
               onChangeText={setEmail}
               className="border border-gray-300 rounded-xl p-4"
+              autoCapitalize="none"
+              autoCorrect={false}
             />
             <View className="relative">
               <TextInput
@@ -68,6 +69,8 @@ export default function HomeScreen() {
                 onChangeText={setPassword}
                 className="border border-gray-300 rounded-xl p-4"
                 secureTextEntry={!seePassword}
+                autoCapitalize="none"
+                autoCorrect={false}
               />
               <TouchableOpacity
                 onPress={() => setSeePassword(!seePassword)}
