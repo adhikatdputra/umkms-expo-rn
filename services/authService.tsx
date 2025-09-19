@@ -1,22 +1,40 @@
 import authApi from "@/api/auth";
-import { useAuth } from "@/composables/useAuth";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "expo-router";
 import { Toast } from "toastify-react-native";
 
 export const useLogin = () => {
-  const router = useRouter();
+  const { login } = useAuthContext();
+  
   return useMutation({
     mutationFn: authApi.login,
-    onSuccess: (data) => {
-      Toast.success("Sign in successful");
-      useAuth.saveToken(data?.data?.token);
-      setTimeout(() => {
-        router.push("/home");
-      }, 2000);
+    onSuccess: async (data) => {
+      try {
+        Toast.success("Sign in successful");
+        await login(data?.data?.token);
+      } catch (error) {
+        console.error("Error during login:", error);
+        Toast.error("Sign in failed");
+      }
     },
     onError: () => {
       Toast.error("Sign in failed");
+    },
+  });
+};
+
+export const useLogout = () => {
+  const { logout } = useAuthContext();
+  
+  return useMutation({
+    mutationFn: async () => {
+      await logout();
+    },
+    onSuccess: () => {
+      Toast.success("Logout successful");
+    },
+    onError: () => {
+      Toast.error("Logout failed");
     },
   });
 };

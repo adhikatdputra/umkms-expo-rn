@@ -2,19 +2,42 @@ import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 
 // import { Toast } from "toastify-react-native";
 import transactionsApi from "@/api/transactions";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { formatDate } from "@/helpers/date";
 import { formatRupiah } from "@/helpers/number";
 import { Balance } from "@/interfaces/transactions";
 import { useQuery } from "@tanstack/react-query";
+import { router } from "expo-router";
 import LottieView from "lottie-react-native";
+import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
+  const { isAuthenticated, isLoading: authLoading } = useAuthContext();
   const { data: balance, isLoading } = useQuery({
     queryKey: ["balance"],
     queryFn: transactionsApi.getBalance,
     select: (data) => data.data as Balance,
+    enabled: isAuthenticated,
   });
+
+  // * Redirect to login if user is not authenticated
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.replace("/");
+    }
+  }, [isAuthenticated, authLoading]);
+
+  // * Show loading spinner while checking authentication status
+  if (authLoading) {
+    return (
+      <SafeAreaView className="flex-1 bg-gray-100 justify-center items-center">
+        <ActivityIndicator size="large" color="#000" />
+        <Text className="mt-4 text-lg">Loading...</Text>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView className="flex-1 p-6 w-full bg-gray-100 gap-4">
       <Text>

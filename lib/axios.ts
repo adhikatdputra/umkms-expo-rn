@@ -11,9 +11,9 @@ interface ApiError {
 }
 
 // Constants
-const API_BASE_URL = "https://remit.umkms.com";
+const API_BASE_URL = "https://dev-remit.umkms.com";
 const TOKEN_KEY = "authToken";
-const CLIENT_ID = "dcbe7aa2-9fe2-4f68-a8bd-1e7a7b381306";
+const CLIENT_ID = "ed5f43b2-1bfb-4ed5-b5ec-799e1e2cd805";
 
 // Create axios instance
 const instance = axios.create({

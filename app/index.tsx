@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { useLogin } from "@/services/authService";
+import { router } from "expo-router";
 import LottieView from "lottie-react-native";
-import { useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const emailValue = "user@umkms.com";
@@ -13,6 +15,14 @@ export default function HomeScreen() {
   const [password, setPassword] = useState("");
   const [seePassword, setSeePassword] = useState(false);
   const { mutate: loginMutation, isPending } = useLogin();
+  const { isAuthenticated, isLoading } = useAuthContext();
+
+  // * Redirect to home if user is already authenticated
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace("/(tabs)/home");
+    }
+  }, [isAuthenticated, isLoading]);
 
   const resetForm = () => {
     setEmail("");
@@ -33,10 +43,22 @@ export default function HomeScreen() {
       onSuccess: () => {
         setTimeout(() => {
           resetForm();
+          // * Navigate to home after successful login
+          router.replace("/(tabs)/home");
         }, 2000);
       },
     });
   };
+
+  // * Show loading spinner while checking authentication status
+  if (isLoading) {
+    return (
+      <SafeAreaView className="flex-1 bg-white justify-center items-center">
+        <ActivityIndicator size="large" color="#000" />
+        <Text className="mt-4 text-lg">Loading...</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 p-6 w-full bg-white justify-center items-center">

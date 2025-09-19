@@ -1,30 +1,53 @@
-import { StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
 import authApi from "@/api/auth";
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { Button } from "@/components/ui/button";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { useAuth } from "@/composables/useAuth";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { User } from "@/interfaces/user";
+import { useLogout } from "@/services/authService";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { Toast } from "toastify-react-native";
+import { useEffect } from "react";
 
 export default function TabTwoScreen() {
   const router = useRouter();
+  const { isAuthenticated, isLoading: authLoading } = useAuthContext();
+  const { mutate: logoutMutation, isPending: isLoggingOut } = useLogout();
+  
   const { data: user } = useQuery({
     queryKey: ["user"],
     queryFn: authApi.getUser,
     select: (data) => data.data as User,
+    enabled: isAuthenticated
   });
 
+  // * Redirect to login if user is not authenticated
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.replace("/");
+    }
+  }, [isAuthenticated, authLoading]);
+
   const handleLogout = () => {
-    useAuth.removeToken();
-    Toast.success("Logout successful");
-    setTimeout(() => {
-      router.push("/");
-    }, 1000);
+    logoutMutation(undefined, {
+      onSuccess: () => {
+        router.replace("/");
+      },
+    });
   };
+
+  // * Show loading spinner while checking authentication status
+  if (authLoading) {
+    return (
+      <View className="flex-1 bg-white justify-center items-center">
+        <ActivityIndicator size="large" color="#000" />
+        <Text className="mt-4 text-lg">Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#4EAB33", dark: "#353636" }}
@@ -57,7 +80,12 @@ export default function TabTwoScreen() {
           </View>
         </View>
         <View className="mt-6">
-          <Button title="Logout" onPress={handleLogout} variant="outline" />
+          <Button 
+            title={isLoggingOut ? "Logging out..." : "Logout"} 
+            onPress={handleLogout} 
+            variant="outline"
+            isLoading={isLoggingOut}
+          />
         </View>
       </View>
     </ParallaxScrollView>
